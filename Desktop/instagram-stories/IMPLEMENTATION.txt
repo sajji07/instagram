@@ -1,0 +1,200 @@
+# Instagram Stories Feature - Implementation Guide
+
+## Overview
+This is a fully functional Instagram-like Stories feature built with Next.js, TypeScript, and Tailwind CSS. It includes server-side rendering (SSR), static generation, SEO optimization with Open Graph tags, and client-side session storage for view tracking.
+
+## Project Structure
+
+```
+src/
++-- components/          # React components
+    StoryViewer.tsx         # Main story display component with progress bar
+    StoriesList.tsx         # Stories feed with gradient rings for unviewed stories
+    ViewersModal.tsx        # Modal showing who viewed the story
+ data/               # Hardcoded data
+    stories.ts              # Story data and helper functions
+ hooks/              # Custom React hooks
+    useViewTracking.ts      # Session storage hook for view tracking
+ pages/              # Next.js pages
+    index.tsx               # Home page with stories feed
+    stories/
+       [userId].tsx        # Dynamic story viewer page
+    _app.tsx                # App wrapper
+    _document.tsx           # HTML document
+ styles/             # CSS files
+    globals.css             # Global styles with animations
+ types/              # TypeScript types
+     schema.ts               # Data schema definitions
+```
+
+## Key Features
+
+### 1. Story Navigation
+- **Tap Right/Click Right**: Move to next story
+- **Tap Left/Click Left**: Move to previous story
+- **Keyboard**: Arrow keys for navigation, Escape to exit
+- **Auto-advance**: Stories automatically progress after 5 seconds
+
+### 2. Progress Indicator
+- White progress bar at the top of each story
+- Smooth animation showing story duration
+- Resets when moving between stories
+
+### 3. View Tracking
+- Session Storage integration to track viewed stories
+- View count displayed on each story
+- Viewers modal showing who has viewed the story
+- Unviewed count badge on story thumbnails
+
+### 4. UI/UX Features
+- Loading spinner while images load
+- User information header (name, username, avatar)
+- Story caption display
+- View count indicator
+- Gradient rings on unviewed stories
+- Smooth transitions and hover effects
+- Fully responsive design
+
+### 5. SEO & Meta Tags
+- **Open Graph tags**: For link previews (og:title, og:description, og:image, og:url)
+- **Twitter Card tags**: For Twitter sharing
+- **Dynamic meta tags**: Each story has unique metadata
+- **Server-side rendering**: For better SEO
+- **Static generation**: For fast page loads
+
+## Data Schema
+
+### User
+```typescript
+interface User {
+  id: string;
+  username: string;
+  name: string;
+  avatar: string;
+}
+```
+
+### Story
+```typescript
+interface Story {
+  id: string;
+  userId: string;
+  user: User;
+  type: 'image' | 'video';
+  media: string;
+  caption?: string;
+  createdAt: string;
+  expiresAt: string;
+  viewCount: number;
+  viewedBy: string[];
+  duration?: number;
+}
+```
+
+### StoryGroup
+```typescript
+interface StoryGroup {
+  user: User;
+  stories: Story[];
+  hasViewed: boolean;
+  unviewedCount: number;
+}
+```
+
+## Session Storage Usage
+
+The app uses Session Storage to track which stories have been viewed during the session:
+
+```json
+{
+  "story1": ["currentUser"],
+  "story2": ["currentUser"],
+  "story3": ["currentUser", "user2", "user3"]
+}
+```
+
+**Benefits:**
+- View data persists during the session
+- No backend required for demo
+- Resets when tab/browser is closed
+- Easy to implement real backend view tracking
+
+## Hardcoded Data
+
+The app comes with 6 stories from 4 users with realistic data:
+- Multiple images per user
+- Captions and view counts
+- Timestamps
+- Pre-populated view lists
+
+To modify stories, edit `src/data/stories.ts`.
+
+## Running the App
+
+### Development Server
+```bash
+npm run dev
+```
+Server runs at `http://localhost:3000`
+
+### Production Build
+```bash
+npm run build
+npm start
+```
+
+## Technologies Used
+
+- **Framework**: Next.js 16 (Turbopack for fast builds)
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS 4
+- **Storage**: Session Storage API
+- **Routing**: Next.js Pages Router with dynamic routes
+
+## Browser Support
+
+- Chrome/Edge (latest)
+- Firefox (latest)
+- Safari (latest)
+- Mobile browsers
+
+## Performance Optimizations
+
+1. **Image Optimization**: Using standard img tags with Unsplash CDN
+2. **Code Splitting**: Automatic via Next.js
+3. **Static Generation**: Story pages are pre-generated at build time
+4. **Revalidation**: ISR (Incremental Static Regeneration) set to 60s
+5. **Lazy Loading**: Components loaded on-demand
+
+## Customization
+
+### Change Story Duration
+In `StoryViewer.tsx`, modify the `duration` prop (default: 5 seconds)
+
+### Add New Stories
+Edit `src/data/stories.ts` and add to the `stories` array
+
+### Modify Colors
+Update Tailwind classes in components, especially:
+- `StoriesList.tsx`: Story ring gradients
+- `StoryViewer.tsx`: Progress bar and UI colors
+
+### Add More Users
+Update the `users` object in `src/data/stories.ts`
+
+## Future Enhancements
+
+- Backend integration for persistent view tracking
+- User authentication and personal story creation
+- Video story support with proper controls
+- Story filters and effects
+- Share stories to other platforms
+- Analytics dashboard
+- Real-time notifications for viewers
+
+## Notes
+
+- All images are from Unsplash and are sample URLs
+- View tracking is session-based (resets on page refresh)
+- Stories expire after 24 hours (in real implementation)
+- The app is fully responsive and mobile-friendly
